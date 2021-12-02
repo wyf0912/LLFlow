@@ -1,7 +1,9 @@
-#[AAAI 2022] Low-Light Image Enhancement with Normalizing Flow
-The code release of paper "Low-Light Image Enhancement with Normalizing Flow", AAAI 2022
+# [AAAI 2022] Low-Light Image Enhancement with Normalizing Flow
+### [Paper](!https://arxiv.org/pdf/2109.05923.pdf) | [Project Page](!https://wyf0912.github.io/LLFlow/)
 
-[[Paper](!https://arxiv.org/pdf/2109.05923.pdf)] [[Project Page](!https://wyf0912.github.io/LLFlow/)]
+**Low-Light Image Enhancement with Normalizing Flow**
+<br>_Yufei Wang, Renjie Wan, Wenhan Yang, Haoliang Li, Lap-pui Chau, Alex C. Kot_<br>
+In AAAI'2022
 
 ## Overall
 ![Framework](images/framework.png)
@@ -17,6 +19,7 @@ The evauluation results on LOL are as follows
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93** | **0.11** |
 
+and th
 ### Visual Results
 ![Visual comparison with state-of-the-art low-light image enhancement methods on LOL dataset.](images/Input_778-Reference_778.png)
 
