@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="slider">
+        <div class="original-image"></div>
+        <input type="range" value="20" max="100">
+    </div>
+    <script>
+        document.querySelector(".slider input").addEventListener("input",function(){
+            document.querySelector(".original-image").style.width = this.value +
+            "%";
+        });
+    </script>
+</body>
+</html>

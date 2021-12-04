@@ -1,0 +1,290 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Low-Light Image Enhancement with Normalizing Flow</title>
+
+<!-- Meta tags for search engines to crawl -->
+<meta name="low-light image enhancment" content="index,follow">
+<meta name="description" content="To enhance low-light images to normally-exposed ones is highly ill-posed, namely that the mapping relationship between them is one-to-many. Previous works based on the pixel-wise reconstruction losses and deterministic processes fail to capture the complex conditional distribution of normally exposed images, which results in improper brightness, residual noise, and artifacts. In this paper, we investigate to model this one-to-many relationship via a proposed normalizing flow model. An invertible network that takes the low-light images/features as the condition and learns to map the distribution of normally exposed images into a Gaussian distribution. In this way, the conditional distribution of the normally exposed images can be well modeled, and the enhancement process, i.e., the other inference direction of the invertible network, is equivalent to being constrained by a loss function that better describes the manifold structure of natural images during the training. The experimental results on the existing benchmark datasets show our method achieves better quantitative and qualitative results, obtaining better-exposed illumination, less noise and artifact, and richer colors.">
+<meta name="keywords" content="low-light image enhancement; normalizing flow; LOL; VE-LOL;">
+<!-- <link rel="author" href="https://liuziwei7.github.io/"> -->
+
+<!-- Fonts and stuff -->
+<link href="./LLNet/css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="./LLNet/project.css" media="screen">
+<link rel="stylesheet" type="text/css" media="screen" href="./LLNet/iconize.css">
+<link rel="stylesheet" type="text/css" media="screen" href="./LLNet/llnet.css">
+<script async="" src="./LLNet/prettify.js"></script>
+</head>
+<body>
+	<div id="content">
+		<div id="content-inner">
+			
+			<div class="section head">
+	<h1>Low-Light Image Enhancement with Normalizing Flow</h1>
+
+	<div class="authors_list1">
+		<a href="https://wyf0912.github.io/">Yufei Wang</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="https://wanrenjie.github.io/">Renjie Wan</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="https://flyywh.github.io/">Wenhan Yang</a><sup>1</sup>&nbsp;&nbsp;&nbsp;
+		<a href="https://hlli1991.github.io/">Haoliang Li</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="https://personal.ntu.edu.sg/elpchau/">Lap-pui Chau</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="https://personal.ntu.edu.sg/eackot/index.html">Alex C. Kot</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</div>
+
+<!-- 	<div class="authors_list2">
+		Haiyu Zhao<sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Shuai Yi<sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a href="https://liuziwei7.github.io/">Ziwei Liu</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</div> -->
+
+	<div class="affiliations">
+		<br>
+		1. <a href="https://www.ntu.edu.sg/rose">Rapid-Rich Object Search Lab (ROSE), Nanyang Technological University</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		2. <a href="https://www.cityu.edu.hk/">City University of Hong Kong</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	</div>
+
+	<div class="venue"><a href="https://aaai.org/Conferences/AAAI-22/">AAAI Conference on Artificial Intelligence, 2022</a></div>
+
+<div class="section">
+	<br>
+	<center>
+		<img src="./img/insight.jpg" border="0" width="100%">
+		<br>
+		<p align="justify">
+			&nbsp;&nbsp;&nbsp;&nbsp;Illustration of the superiority of our normalizing flow model in measuring the visual distance compared to L1 reconstruction loss for low-light image enhancement.
+            Although (b) is more visually similar to (c), i.e., reference image, than (a), their L1 reconstruction losses are the same.
+            Benefiting from better capturing the complex conditional distribution of normally exposed images, our model can better capture the error distribution and therefore provide the measure results more consistent with human vision.
+		</p>
+	</center>
+</div>
+<!--
+<div class="section news">
+	<h2>News</h2>
+	<p><strong>2021-07-12</strong> <a href="https://competitions.codalab.org/competitions/33430" target="_blank"><b>The submission on Codalab starts!</b></a><img src = './LLNet/new.jpg' width = '28'></p>
+	<p><strong>2021-07-10</strong> Two benchmarks, <a href="https://mvp-dataset.github.io/MVP/Completion.html" target="_blank"><b>Single-View Point Cloud Completion</b></a> and 
+		<a href="https://mvp-dataset.github.io/MVP/Registration.html" target="_blank"><b>Partial-to-Partial Point Cloud Registration</b></a> 
+		based on the <a href="https://mvp-dataset.github.io/"><b>MVP database</b></a> have been released. <img src = './LLNet/new.jpg' width = '28'></p>
+	<p><strong>2021-07-09</strong> An open-source toolbox for Point Cloud Completion and Registration, <a href="https://github.com/paul007pl/MVP_Benchmark"><b>MVP codebase</b></a>, has been released. <img src = './LLNet/new.jpg' width = '28'></p>
+	<p><strong>2021</strong> The MVP challenges will be hosted in the <a href="https://sense-human.github.io"><b>ICCV2021 Workshop: Sensing, Understanding and Synthesizing Humans.</b></a></p>
+  </div>	
+-->
+<div class="section abstract">
+	<h2>Abstract</h2>
+	<br>
+	<p align="justify">
+		&nbsp;&nbsp;&nbsp;&nbsp;To enhance low-light images to normally-exposed ones is highly ill-posed, namely that the mapping relationship between them is one-to-many. Previous works based on the pixel-wise reconstruction losses and deterministic processes fail to capture the complex conditional distribution of normally exposed images, which results in improper brightness, residual noise, and artifacts. In this paper, we investigate to model this one-to-many relationship via a proposed normalizing flow model. An invertible network that takes the low-light images/features as the condition and learns to map the distribution of normally exposed images into a Gaussian distribution. In this way, the conditional distribution of the normally exposed images can be well modeled, and the enhancement process, i.e., the other inference direction of the invertible network, is equivalent to being constrained by a loss function that better describes the manifold structure of natural images during the training. The experimental results on the existing benchmark datasets show our method achieves better quantitative and qualitative results, obtaining better-exposed illumination, less noise and artifact, and richer colors.
+	</p>
+</div>
+
+<br>
+
+<div class="section highlight">
+	<h2>Method Highlight</h2>
+	<br>
+	<center>
+		<!-- <br> -->
+    <img src="./img/framework-new.jpg" border="0" width="100%">
+		<p align="justify">
+			&nbsp;&nbsp;&nbsp;&nbsp; The architecture of our proposed LLFlow. Our model consists of a conditional encoder to extract the illumination-invariant color map and an invertible network that learns a distribution of normally exposed images conditioned on a low-light one. For training, we maximize the exact likelihood of a high-light image $x_h$ by using change of variable theorem and a random selector is used to obtain the mean value of latent variable $z$  which obey Gaussian distribution from the color map $C(x_h)$ of reference image or the extracted color map $g(x_l)$ from low-light image through the conditional encoder. For inference, we can randomly select $z$ from $\mathcal{N}(g(x_l),\mathbf{1})$ to generate different normally exposed images images with different brightness levels 
+            from the learned conditional distribution $f_{flow}(x|x_l)$.
+            (The color maps in the blue area are squeezed to the same size with latent feature $z$.)}
+		</p>
+	</center>
+</div>
+
+<!-- <div class="section Paper, Code & Dataset">
+	<h2>Paper, Code & Dataset</h2>
+		<center>
+			<ul>
+				<li class="grid">
+					<div class="griditem">
+						<a href="https://arxiv.org/abs/1801.07829" target="_blank" class="imageLink"><img src="./LLNet/paper.jpg"></a><br>
+						<a href="https://arxiv.org/abs/1801.07829" target="_blank">Paper</a>
+					</div>
+				</li>
+			</ul>
+			Coming soon…
+		</center>
+</div>
+<br>  -->
+
+<br>
+
+<div class="section results">
+	<h2>Experiment Results</h2>
+    <table width="100%" align="center" border="none" cellspacing="0" cellpadding="30">
+        <tbody><tr>
+            <td width="50%">
+              <center>
+                <img src="./img/res_lol.png" ,="" width="100%"><br>Quantitative comparison on the LOL dataset in terms of PSNR, SSIM and LPIPS. ↑ (↓) denotes that, larger (smaller) values lead to better quality.<br>
+              </center>
+            </td>
+            <td width="50%">
+                <center>
+                  <img src="./img/res_ve_lol.png" ,="" width="100%"><br>Quantitative comparison on the VE-LOL dataset in
+                  terms. The models are trained on
+                  the LOL or their own dataset. ↑ (↓) denotes that, larger (smaller)
+                  values lead to better quality<br>
+                </center>
+              </td>
+          </tr>
+        </tbody></table>
+    </table>
+	<br>
+	<center>
+		<a href="https://www.dropbox.com/sh/la0kwlqx4n2s5e3/AACjoTzt-_vlX6OF9mfSpFMra?dl=0&lst=" target="_blank" class="imageLink"><img src="./img/res665.png" border="0" width="100%"></a>
+		<br>
+		<p align="justify">
+			&nbsp;&nbsp;&nbsp;&nbsp; Visual comparison with state-of-the-art low-light image enhancement methods on LOL dataset. The normally exposed image generated by our method has less noise and artifact, and better colorfulness.
+		</p>
+	</center>
+</div>
+			
+<br>
+
+<div class="section materials">
+	<h2>Materials</h2>
+	<table width="100%" align="center" border="none" cellspacing="0" cellpadding="30">
+          <tbody><tr>
+            <td width="25%">
+              <center>
+                <a href="https://arxiv.org/pdf/2109.05923.pdf" target="_blank" class="imageLink"><img src="./img/Preparation_of_Papers_for_IEEE_Signal_Processing_Letters__5_page_limit___1___Copy__out.jpg" ,="" width="80%"></a><br><br>
+                <a href="https://arxiv.org/pdf/2109.05923.pdf" target="_blank">Paper</a>
+              </center>
+            </td>
+            <td width="25%">
+                <center>
+                  <a href="" target="_blank" class="imageLink"><img src="./img/output_out.jpg" ,="" width="80%"></a><br><br>
+                  <a href="" target="_blank">Supplementary</a>
+                </center>
+              </td>
+            <td width="25%" valign="middle">
+              <center>
+                <a href="https://github.com/wyf0912/LLFlow" target="_blank" class="imageLink"><img src="./LLNet/icon_github.png" ,="" width="50%"></a><br><br>
+                <a href="https://github.com/wyf0912/LLFlow" target="_blank">Code</a>
+              </center>
+            </td>
+          </tr>
+        </tbody></table>
+</div>
+			
+<br>
+
+<!-- <div class="section video">
+	<h2>Videos</h2>
+	<br>
+	<table width="100%" align="center" border="none" cellspacing="0" cellpadding="30">
+          <tbody><tr>
+            <td width="40%" valign="middle">
+              <center>
+                <iframe width="400" height="225" src="https://www.youtube.com/embed/8qyhsyis9JY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <br><br>
+                <a href="https://www.youtube.com/watch?v=8qyhsyis9JY" target="_blank"> Presentation</a>
+              </center>
+            </td>
+            <td width="40%" valign="middle">
+              <center>
+                <iframe width="400" height="225" src="https://www.youtube.com/embed/0SNHlxvCP0g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <br><br>
+                <a href="https://www.youtube.com/watch?v=0SNHlxvCP0g" target="_blank"> More Qualitative Results</a>
+              </center>
+            </td>
+          </tr>
+        </tbody></table>
+</div> -->
+
+
+<!-- <div class="section MVP dataset">
+	<h2>MVP Dataset</h2>
+	<center>
+		<ul>
+			<li class="grid">
+				<div class="griditem">
+					<a target="_blank" class="imageLink"><img src="./LLNet/mvp.png"></a><br>
+					<a target="_blank">Multi-View Partial (MVP) Point Cloud Dataset</a>
+				</div>
+			</li>
+		</ul>
+	</center>
+</div>
+
+<br> -->
+
+<!-- <div class="section materials">
+	<h2>Materials</h2>
+	<center>
+		<ul>
+					 
+					<li class="grid">
+				<div class="griditem">
+		<a href="https://arxiv.org/abs/1801.07829" target="_blank" class="imageLink"><img src="./LLNet/paper_pages.png"></a><br>
+			<a href="https://arxiv.org/abs/1801.07829" target="_blank">Paper</a>
+		</div>
+				</li>
+		
+			</ul>
+			</center>
+			</div>
+			
+<br> -->
+
+<!-- <div class="section code">
+	<h2>Code and Models</h2>
+	<center>
+		<ul>
+					 
+					<li class="grid">
+				<div class="griditem">
+		<a href="https://github.com/paul007pl/LLNet" target="_blank" class="imageLink"><img src="./LLNet/code.png"></a><br>
+			<a href="https://github.com/paul007pl/LLNet" target="_blank">Code and Models</a>
+		</div>
+				</li>
+
+			</ul>
+			</center>
+			</div>
+			
+<br>
+
+<div class="section app">
+	<h2>Real-world Applications</h2>
+	<br>
+	<center>
+					 
+		<a href="https://arxiv.org/abs/1902.08570" target="_blank" class="imageLink"><img src="./LLNet/lhc.jpg" border="0" width="50%"></a><br>
+			<a href="https://arxiv.org/abs/1902.08570" target="_blank">ParticalNet in Large Hadron Collider (LHC)</a>
+	
+			</center>
+			</div>
+			
+<br>
+
+<div class="section media">
+	<h2>Media Coverage</h2>
+	<br>
+	<center>
+					 
+		<a href="http://news.mit.edu/2019/deep-learning-point-clouds-1021" target="_blank" class="imageLink"><img src="./LLNet/media.png" border="0" width="50%"></a><br>
+			<a href="http://news.mit.edu/2019/deep-learning-point-clouds-1021" target="_blank">MIT News</a>
+	
+			</center>
+			</div>
+			
+<br> -->
+
+<div class="section citation">
+	<h2>Citation</h2>
+	<div class="section bibtex">
+		<pre align="left">
+@article{wang2021low,
+    title={Low-Light Image Enhancement with Normalizing Flow},
+    author={Wang, Yufei and Wan, Renjie and Yang, Wenhan and Li, Haoliang and Chau, Lap-Pui and Kot, Alex C},
+    journal={arXiv preprint arXiv:2109.05923},
+    year={2021}
+    }
+}</pre>
+	</div>
+</div>
+</body>
+</html>

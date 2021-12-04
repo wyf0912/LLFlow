@@ -1,0 +1,39 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+.slider{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    background: url(img/778_input.png) no-repeat;
+    background-position: 0 center;
+    background-size: 720 480;
+    position: relative;
+}
+
+.slider input{
+    -webkit-appearance: none;
+    width: 100%;
+    background: none;
+    z-index: 10;
+}
+
+.slider input::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 10px;
+    height: 100vh;
+    background-color: #111;
+    cursor: pointer;
+}
+
+.original-image{
+    position: absolute;
+    left: 0;
+    width: 20%;
+    height: 100vh;
+    background: url(img/778_ours.png) no-repeat;
+    background-position: 0 center;
+    background-size: 720 480;
+}
