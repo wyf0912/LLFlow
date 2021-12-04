@@ -79,7 +79,7 @@ def hiseq_color_cv2_img(img):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt", default="confs\LOL_smallNet.yml")
+    parser.add_argument("--opt", default="confs\LOLv2-pc.yml")
     args = parser.parse_args()
     conf_path = args.opt
     conf = conf_path.split('/')[-1].replace('.yml', '')
