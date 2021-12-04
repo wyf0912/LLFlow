@@ -9,6 +9,7 @@ In AAAI'2022
 ![Framework](images/framework.png)
 
 ### Quantitative results
+#### Evaluation on LOL
 The evauluation results on LOL are as follows
 | Method | PSNR | SSIM | LPIPS |
 | :-- | :--: | :--: | :--: |
@@ -18,6 +19,10 @@ The evauluation results on LOL are as follows
 | Kind | 20.87 | 0.80 | 0.17 |
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93** | **0.11** |
+
+#### Computational Cost
+![Computational Cost](images/cost.png)
+The computational cost and performance of models are in the above table. We evaluate the cost using one image with a size 400×600. Ours(large) is the standard model reported in supplementary and Ours(small) is a model with reduced parameters. Both the training config files and pre-trained models are provided.
 
 ### Visual Results
 ![Visual comparison with state-of-the-art low-light image enhancement methods on LOL dataset.](images/Input_778-Reference_778.png)

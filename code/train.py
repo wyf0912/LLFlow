@@ -284,6 +284,8 @@ def main():
                     cropped_sr_img = normal_img  # [crop_size:-crop_size, crop_size:-crop_size, :]
                     cropped_gt_img = gt_img  # [crop_size:-crop_size, crop_size:-crop_size, :]
 
+                    # We follow a similar way of 'Kind' to finetune the overall brightness as illustrated in Line 73 (https://github.com/zhangyhuaee/KinD/blob/master/evaluate_LOLdataset.py).
+                    # A normally-exposed image can also be obtained without finetuning the global brightness and we can achvieve compatible performance in terms of SSIM and LPIPS.
                     mean_gray_out = cv2.cvtColor(normal_img.astype(np.float32), cv2.COLOR_BGR2GRAY).mean()
                     mean_gray_gt = cv2.cvtColor(gt_img.astype(np.float32), cv2.COLOR_BGR2GRAY).mean()
                     cropped_sr_img_adjust = np.clip(cropped_sr_img * (mean_gray_gt / mean_gray_out), 0, 1)
