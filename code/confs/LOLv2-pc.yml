@@ -1,0 +1,126 @@
+
+
+
+#### general settings
+name: LOL_v2-color_as_full_z_gt0.2_lr5e-4_ablation2
+# name: no-delay-batch16_patch160_L_3_iter3W_gaussianNoise5Prob0_ModifiedConEncoder1_noSplit_nb16_concat_histeq_logLow_EncoderGammaCurve
+
+use_tb_logger: true
+model: LLFlow
+distortion: sr
+scale: 1
+gpu_ids: [ 0]
+dataset: LoL_v2
+optimize_all_z: false
+cond_encoder: ConEncoder1
+train_gt_ratio: 0.5
+avg_color_map: false
+
+concat_histeq: true
+histeq_as_input: false
+concat_color_map: false
+gray_map: false # concat 1-input.mean(dim=1) to the input
+
+align_condition_feature: false
+align_weight: 0.001
+align_maxpool: true
+
+to_yuv: false
+
+encode_color_map: false
+
+le_curve: false
+# sigmoid_output: true
+
+#### datasets
+datasets:
+  train:
+    # name: LoL
+    root: D:\Dataset\LOL-v2\LOL-v2
+    quant: 32
+    use_shuffle: true
+    n_workers: 2   # per GPU
+    batch_size: 16 # 12
+    use_flip: true
+    color: RGB
+    use_crop: true
+    GT_size: 160 # 192
+    noise_prob: 0
+    noise_level: 5
+    log_low: true
+
+  val:
+    root: D:\Dataset\LOL-v2\LOL-v2
+    n_workers: 1
+    quant: 32
+    n_max: 20
+    batch_size: 1 # must be 1
+    log_low: true
+
+#### Test Settings
+dataroot_GT: ../datasets/div2k-validation-modcrop8-gt
+dataroot_LR: ../datasets/div2k-validation-modcrop8-x8
+model_path: C:/Users/Yufei/OneDrive - Nanyang Technological University (1)/Project/LowLightFlowAAAI/experiments/LOL_v2-color_as_full_z_gt0.2_lr5e-4/models/39000_G.pth # /home/yufei/project/LowLightFlow/experiments/no-delay-batch12_path240_L_3_iter3W/models/best_psnr_G.pth
+heat: 0.9 # This is the standard deviation of the latent vectors
+
+#### network structures
+network_G:
+  which_model_G: LLFlow
+  in_nc: 3
+  out_nc: 3
+  nf: 64
+  nb: 24 #  12 for our low light encoder, 23 for LLFlow
+  train_RRDB: false
+  train_RRDB_delay: 0.5
+
+  flow:
+    K: 12 # 24.49 psnr用的12 # 16
+    L: 3 # 4
+    noInitialInj: true
+    coupling: CondAffineSeparatedAndCond
+    additionalFlowNoAffine: 2
+    split:
+      enable: false
+    fea_up0: true
+    stackRRDB:
+      blocks: [ 1, 3, 5, 7 ]
+      concat: true
+
+#### path
+path:
+  # pretrain_model_G: ../pretrained_models/RRDB_DF2K_8X.pth
+  strict_load: true
+  resume_state: auto
+
+#### training settings: learning rate scheme, loss
+train:
+  manual_seed: 10
+  lr_G: !!float 5e-4
+  weight_decay_G: 0 #1e-5 # 1e-5 # 5e-5 # 1e-5
+  beta1: 0.9
+  beta2: 0.99
+  lr_scheme: MultiStepLR
+  warmup_iter: 200  # no warm up
+  lr_steps_rel: [ 0.5, 0.75, 0.9, 0.95 ] # [0.2, 0.35, 0.5, 0.65, 0.8, 0.95]  # [ 0.5, 0.75, 0.9, 0.95 ]
+  lr_gamma: 0.5
+
+  weight_l1: 0
+  # flow_warm_up_iter: -1
+  weight_fl: 1
+
+  niter: 40000 #200000
+  val_freq: 20
+
+#### validation settings
+val:
+  # heats: [ 0.0, 0.5, 0.75, 1.0 ]
+  n_sample: 4
+
+test:
+  heats: [ 0.0, 0.7, 0.8, 0.9 ]
+
+#### logger
+logger:
+  # Debug print_freq: 100
+  print_freq: 100
+  save_checkpoint_freq: !!float 1e4

@@ -53,7 +53,7 @@ def main():
     #### options
     parser = argparse.ArgumentParser()
     parser.add_argument('-opt', type=str, help='Path to option YMAL file.',
-                            default='./confs/low-light-server-modified_encoder.yml' if sys.platform != 'win32' else './confs/LoL-rebuttal_smallNet.yml') #  './confs/LOLv2-pc_rebuttal.yml') # 
+                            default='./confs/low-light-server-modified_encoder.yml' if sys.platform != 'win32' else './confs/LOL_smallNet.yml') #  './confs/LOLv2-pc_rebuttal.yml') # 
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
