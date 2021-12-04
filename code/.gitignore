@@ -1,0 +1,4 @@
+visual_res/
+**/__pycache__/
+*.pyc
+*.DS_Store
