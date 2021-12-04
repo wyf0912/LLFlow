@@ -52,7 +52,7 @@ def color_adjust(low_light, output, kernel_size=7):
 def main():
     #### options
     parser = argparse.ArgumentParser()
-    parser.add_argument('-opt', type=str, help='Path to option YMAL file.',
+    parser.add_argument('--opt', type=str, help='Path to option YMAL file.',
                             default='./confs/low-light-server-modified_encoder.yml' if sys.platform != 'win32' else './confs/LOL_smallNet.yml') #  './confs/LOLv2-pc_rebuttal.yml') # 
     parser.add_argument('--launcher', choices=['none', 'pytorch'], default='none',
                         help='job launcher')

@@ -58,10 +58,10 @@ datasets:
     log_low: true
 
 #### Test Settings
-dataroot_GT: ../datasets/div2k-validation-modcrop8-gt
-dataroot_LR: ../datasets/div2k-validation-modcrop8-x8
-model_path: C:/Users/Yufei/OneDrive - Nanyang Technological University (1)/Project/LowLightFlowAAAI/experiments/LOL_v2-color_as_full_z_gt0.2_lr5e-4/models/39000_G.pth # /home/yufei/project/LowLightFlow/experiments/no-delay-batch12_path240_L_3_iter3W/models/best_psnr_G.pth
-heat: 0.9 # This is the standard deviation of the latent vectors
+dataroot_GT: D:\LOLdataset\eval15\high
+dataroot_LR: D:\LOLdataset\eval15\low
+model_path: C:/Users/Yufei/OneDrive - Nanyang Technological University (1)/Project/LowLightFlowAAAI/experiments/LOL_v2-color_as_full_z_gt0.2_lr5e-4/models/39000_G.pth 
+heat: 0 # This is the standard deviation of the latent vectors
 
 #### network structures
 network_G:

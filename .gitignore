@@ -21,6 +21,7 @@ sdist/
 var/
 wheels/
 experiments/**
+*.png
 results/*/*.*
 pip-wheel-metadata/
 share/python-wheels/

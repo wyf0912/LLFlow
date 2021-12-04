@@ -39,15 +39,45 @@ conda activate LLFlow
 ```
 3. Install Dependencies
 ```
-cd 
+cd LLFlow
+pip install -r requirements.txt
 ```
 
 ### Pretrained Model
 
 ### Test
+You can check the training log to obtain the performance of the model. You can also directly test the performance of the pre-trained model as follows
 
+1. Modify the paths to dataset and pre-trained mode. You need to modify the following path in the config files in `./confs`
+```python
+#### Test Settings
+dataroot_GT
+dataroot_LR
+model_path
+```
+2. Test the model
+```bash
+python test.py --opt your_config_path
+```
 ### Train
+All logging files in the training process, e.g., log message, checkpoints, and snapshots, will be saved to `./experiments`.
 
+1. Modify the paths to dataset in the config yaml files. We provide the following training configs for both `LOL` and `VE-LOL` benchmarks. You can also create your own configs for your own dataset.
+```bash
+.\confs\LOL_smallNet.yml
+.\confs\LOL-pc.yml
+.\confs\LOLv2-pc.yml
+```
+You need to modify the following terms 
+```python
+datasets.train.root
+datasets.val.root
+gpu_ids: [0] # Our model can be trained using a single GPU with memory>20GB. You can also train the model using multiple GPUs by adding more GPU ids in it.
+```
+2. Train the network.
+```bash
+python train.py --opt your_config_path
+```
 ## Citation
 If you find our work useful for your research, please cite our paper
 ```
