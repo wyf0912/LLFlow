@@ -86,9 +86,9 @@
 		<!-- <br> -->
     <img src="./img/framework-new.jpg" border="0" width="100%">
 		<p align="justify">
-			&nbsp;&nbsp;&nbsp;&nbsp; The architecture of our proposed LLFlow. Our model consists of a conditional encoder to extract the illumination-invariant color map and an invertible network that learns a distribution of normally exposed images conditioned on a low-light one. For training, we maximize the exact likelihood of a high-light image $x_h$ by using change of variable theorem and a random selector is used to obtain the mean value of latent variable $z$  which obey Gaussian distribution from the color map $C(x_h)$ of reference image or the extracted color map $g(x_l)$ from low-light image through the conditional encoder. For inference, we can randomly select $z$ from $\mathcal{N}(g(x_l),\mathbf{1})$ to generate different normally exposed images images with different brightness levels 
-            from the learned conditional distribution $f_{flow}(x|x_l)$.
-            (The color maps in the blue area are squeezed to the same size with latent feature $z$.)}
+			&nbsp;&nbsp;&nbsp;&nbsp; The architecture of our proposed LLFlow. Our model consists of a conditional encoder to extract the illumination-invariant color map and an invertible network that learns a distribution of normally exposed images conditioned on a low-light one. For training, we maximize the exact likelihood of a high-light image <img src="https://latex.codecogs.com/gif.latex?x_h"/> by using change of variable theorem and a random selector is used to obtain the mean value of latent variable <img src="https://latex.codecogs.com/gif.latex?z"/>  which obey Gaussian distribution from the color map <img src="https://latex.codecogs.com/gif.latex?C(x_h)"/> of reference image or the extracted color map <img src="https://latex.codecogs.com/gif.latex?g(x_l)"/> from low-light image through the conditional encoder. For inference, we can randomly select <img src="https://latex.codecogs.com/gif.latex?z"/> from <img src="https://latex.codecogs.com/gif.latex?\mathcal{N}(g(x_l),\mathbf{1})"/> to generate different normally exposed images images with different brightness levels 
+            from the learned conditional distribution <img src="https://latex.codecogs.com/gif.latex?f_{flow}(x|x_l)"/>.
+            (The color maps in the blue area are squeezed to the same size with latent feature <img src="https://latex.codecogs.com/gif.latex?z"/>.)
 		</p>
 	</center>
 </div>
