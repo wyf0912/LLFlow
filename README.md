@@ -1,3 +1,5 @@
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/low-light-image-enhancement-with-normalizing/low-light-image-enhancement-on-lol)](https://paperswithcode.com/sota/low-light-image-enhancement-on-lol?p=low-light-image-enhancement-with-normalizing)
+
 # [AAAI 2022] Low-Light Image Enhancement with Normalizing Flow
 ### [Paper](https://arxiv.org/pdf/2109.05923.pdf) | [Project Page](https://wyf0912.github.io/LLFlow/)
 
@@ -38,7 +40,7 @@ git clone https://github.com/wyf0912/LLFlow.git
 ```
 2. Create Conda Environment
 ```
-conda create --name LLFlow python=3.7
+conda create --name LLFlow python=3.8
 conda activate LLFlow
 ```
 3. Install Dependencies
@@ -59,14 +61,24 @@ You can check the training log to obtain the performance of the model. You can a
 1. Modify the paths to dataset and pre-trained mode. You need to modify the following path in the config files in `./confs`
 ```python
 #### Test Settings
-dataroot_GT
+dataroot_GT # only needed for testing with paired data
 dataroot_LR
 model_path
 ```
 2. Test the model
+
+To test the model with paired data and obtain the evaluation results, e.g., PSNR, SSIM, and LPIPS.
 ```bash
 python test.py --opt your_config_path
+# You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
 ```
+
+To test the model with unpaired data 
+```bash
+python test_unpaired.py --opt your_config_path
+# You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
+```
+You can check the output in `../results`.
 ### Train
 All logging files in the training process, e.g., log message, checkpoints, and snapshots, will be saved to `./experiments`.
 
