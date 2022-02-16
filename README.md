@@ -21,7 +21,6 @@ The evauluation results on LOL are as follows
 | Kind | 20.87 | 0.80 | 0.17 |
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93** | **0.11** |
-(The SSIM is measured on gray-scale images.)
 
 #### Computational Cost
 ![Computational Cost](images/cost.png)
@@ -49,7 +48,10 @@ conda activate LLFlow
 cd LLFlow
 pip install -r requirements.txt
 ```
-
+### Dataset
+You can refer to the following links to download the datasets
+[LOL](https://daooshee.github.io/BMVC2018website/), and
+[VE-LOL](https://flyywh.github.io/IJCV2021LowLight_VELOL/).
 ### Pretrained Model
 We provide the pre-trained models with the following settings:
 - A light weight model with promising performance trained on LOL [[Google drive](https://drive.google.com/file/d/1tukKu2KBZ_ohlQiLG4EKnrn1CAt_2F6G/view?usp=sharing)] with training config file `./confs/LOL_smallNet.yml`
