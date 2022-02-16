@@ -21,6 +21,7 @@ The evauluation results on LOL are as follows
 | Kind | 20.87 | 0.80 | 0.17 |
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93** | **0.11** |
+(The SSIM is measured on gray-scale images.)
 
 #### Computational Cost
 ![Computational Cost](images/cost.png)
