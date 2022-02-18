@@ -1,6 +1,6 @@
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/low-light-image-enhancement-with-normalizing/low-light-image-enhancement-on-lol)](https://paperswithcode.com/sota/low-light-image-enhancement-on-lol?p=low-light-image-enhancement-with-normalizing)
 
-# [AAAI 2022] Low-Light Image Enhancement with Normalizing Flow
+# [AAAI 2022 Oral] Low-Light Image Enhancement with Normalizing Flow
 ### [Paper](https://arxiv.org/pdf/2109.05923.pdf) | [Project Page](https://wyf0912.github.io/LLFlow/)
 
 **Low-Light Image Enhancement with Normalizing Flow**
