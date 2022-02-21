@@ -46,7 +46,7 @@ conda activate LLFlow
 3. Install Dependencies
 ```
 cd LLFlow
-pip install -r requirements.txt
+pip install -r ./code/requirements.txt
 ```
 ### Dataset
 You can refer to the following links to download the datasets
