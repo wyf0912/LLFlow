@@ -64,8 +64,9 @@ You can check the training log to obtain the performance of the model. You can a
 1. Modify the paths to dataset and pre-trained mode. You need to modify the following path in the config files in `./confs`
 ```python
 #### Test Settings
-dataroot_GT # only needed for testing with paired data
-dataroot_LR
+dataroot_unpaired # needed for testing with unpaired data
+dataroot_GT # needed for testing with paired data
+dataroot_LR # needed for testing with paired data
 model_path
 ```
 2. Test the model
