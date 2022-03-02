@@ -70,15 +70,15 @@ model_path
 ```
 2. Test the model
 
-To test the model with paired data and obtain the evaluation results, e.g., PSNR, SSIM, and LPIPS.
+To test the model with paired data and obtain the evaluation results, e.g., PSNR, SSIM, and LPIPS. You need to specify the data path ```dataroot_LR```, ```dataroot_GT```, and model path ```model_path``` in the config file. Then run
 ```bash
 python test.py --opt your_config_path
 # You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
 ```
 
-To test the model with unpaired data 
+To test the model with unpaired data, you need to specify the unpaired data path ```dataroot_unpaired```, and model path ```model_path``` in the config file. Then run
 ```bash
-python test_unpaired.py --opt your_config_path
+python test_unpaired.py --opt your_config_path -n results_folder_name
 # You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
 ```
 You can check the output in `../results`.

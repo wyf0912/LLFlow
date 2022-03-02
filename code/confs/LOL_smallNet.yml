@@ -54,9 +54,10 @@ datasets:
 #### Test Settings
 # dataroot_GT: D:\LOLdataset\eval15\high
 # dataroot_LR: D:\LOLdataset\eval15\low
+dataroot_unpaired: /home/data/Dataset/LOL_test/Fusion
 dataroot_GT: D:\Dataset\LOL-v2\LOL-v2\IntegratedTest\Test\high
 dataroot_LR: D:\Dataset\LOL-v2\LOL-v2\IntegratedTest\Test\low
-model_path: C:/Users/Yufei/OneDrive - Nanyang Technological University (1)/Project/LowLightFlowAAAI/experiments/train_rebuttal_smallNet_ch32_blocks1/models/latest_G.pth
+model_path: C:\Users\Yufei\OneDrive - Nanyang Technological University (1)\Project\AAAI2022-code-release\pretrained_model\LOL_smallNet.pth
 heat: 0 # This is the standard deviation of the latent vectors
 
 #### network structures

@@ -15,6 +15,7 @@ import pandas as pd
 import os
 import cv2
 
+
 def fiFindByWildcard(wildcard):
     return natsort.natsorted(glob.glob(wildcard, recursive=True))
 
@@ -69,6 +70,7 @@ def imCropCenter(img, size):
 def impad(img, top=0, bottom=0, left=0, right=0, color=255):
     return np.pad(img, [(top, bottom), (left, right), (0, 0)], 'reflect')
 
+
 def hiseq_color_cv2_img(img):
     (b, g, r) = cv2.split(img)
     bH = cv2.equalizeHist(b)
@@ -77,38 +79,41 @@ def hiseq_color_cv2_img(img):
     result = cv2.merge((bH, gH, rH))
     return result
 
+
+def auto_padding(img, times=16):
+    # img: numpy image with shape H*W*C
+
+    h, w, _ = img.shape
+    h1, w1 = (times - h % times) // 2, (times - w % times) // 2
+    h2, w2 = (times - h % times) - h1, (times - w % times) - w1
+    img = cv2.copyMakeBorder(img, h1, h2, w1, w2, cv2.BORDER_REFLECT)
+    return img, [h1, h2, w1, w2]
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt", default="confs\LOL_smallNet.yml")
+    parser.add_argument("--opt", default="./confs/LOL_smallNet_CA_SEMI_NORM_Z.yml")
+    parser.add_argument("-n", "--name", default="unpaired")
     args = parser.parse_args()
     conf_path = args.opt
     conf = conf_path.split('/')[-1].replace('.yml', '')
     model, opt = load_model(conf_path)
 
-    lr_dir = opt['dataroot_LR']
-
-    lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.png'))
+    lr_dir = opt['dataroot_unpaired']
+    lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.*'))
 
     this_dir = os.path.dirname(os.path.realpath(__file__))
-    test_dir = os.path.join(this_dir, '..', 'results', conf)
+    test_dir = os.path.join(this_dir, '..', 'results', conf, args.name)
     print(f"Out dir: {test_dir}")
-
-
-    scale = opt['scale']
-    pad_factor = 2
 
     for lr_path, idx_test in tqdm.tqdm(zip(lr_paths, range(len(lr_paths)))):
 
         lr = imread(lr_path)
+        raw_shape = lr.shape
+        lr, padding_params = auto_padding(lr)
         his = hiseq_color_cv2_img(lr)
         if opt.get("histeq_as_input", False):
             lr = his
-        
-        # Pad image to be % 2
-        h, w, c = lr.shape
-        lq_orig = lr.copy()
-        lr = impad(lr, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
-                   right=int(np.ceil(w / pad_factor) * pad_factor - w))
 
         lr_t = t(lr)
         if opt["datasets"]["train"].get("log_low", False):
@@ -118,11 +123,12 @@ def main():
             lr_t = torch.cat([lr_t, his], dim=1)
         heat = opt['heat']
         sr_t = model.get_sr(lq=lr_t, heat=None)
-        
-        sr = rgb(torch.clamp(sr_t, 0, 1))
-        path_out_sr = os.path.join(test_dir, "{:0.2f}".format(heat).replace('.', ''), os.path.basename(lr_path))
-        imwrite(path_out_sr, sr)
 
+        sr = rgb(torch.clamp(sr_t, 0, 1)[:, :, padding_params[0]:sr_t.shape[2] - padding_params[1],
+                 padding_params[2]:sr_t.shape[3] - padding_params[3]])
+        assert raw_shape == sr.shape
+        path_out_sr = os.path.join(test_dir, os.path.basename(lr_path))
+        imwrite(path_out_sr, sr)
 
 
 def format_measurements(meas):

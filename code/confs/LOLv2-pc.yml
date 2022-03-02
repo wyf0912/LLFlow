@@ -58,6 +58,7 @@ datasets:
     log_low: true
 
 #### Test Settings
+dataroot_unpaired: /home/data/Dataset/LOL_test/Fusion
 dataroot_GT: D:\LOLdataset\eval15\high
 dataroot_LR: D:\LOLdataset\eval15\low
 model_path: C:/Users/Yufei/OneDrive - Nanyang Technological University (1)/Project/LowLightFlowAAAI/experiments/LOL_v2-color_as_full_z_gt0.2_lr5e-4/models/39000_G.pth 
