@@ -92,13 +92,14 @@ def auto_padding(img, times=16):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt", default="./confs/LOL_smallNet_CA_SEMI_NORM_Z.yml")
+    parser.add_argument("--opt", default="./confs/LOL_smallNet.yml")
     parser.add_argument("-n", "--name", default="unpaired")
     args = parser.parse_args()
     conf_path = args.opt
     conf = conf_path.split('/')[-1].replace('.yml', '')
     model, opt = load_model(conf_path)
-
+    model.netG = model.netG.cuda()
+    
     lr_dir = opt['dataroot_unpaired']
     lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.*'))
 
@@ -122,7 +123,8 @@ def main():
             his = t(his)
             lr_t = torch.cat([lr_t, his], dim=1)
         heat = opt['heat']
-        sr_t = model.get_sr(lq=lr_t, heat=None)
+        with torch.cuda.amp.autocast():
+            sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
 
         sr = rgb(torch.clamp(sr_t, 0, 1)[:, :, padding_params[0]:sr_t.shape[2] - padding_params[1],
                  padding_params[2]:sr_t.shape[3] - padding_params[3]])
