@@ -79,11 +79,13 @@ def hiseq_color_cv2_img(img):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--opt", default="confs\LOLv2-pc.yml")
+    parser.add_argument("--opt", default="confs/LOL_smallNet.yml")
+    parser.add_argument("--align",action="store_true")
     args = parser.parse_args()
     conf_path = args.opt
     conf = conf_path.split('/')[-1].replace('.yml', '')
     model, opt = load_model(conf_path)
+    model.netG = model.netG.cuda()
 
     lr_dir = opt['dataroot_LR']
     hr_dir = opt['dataroot_GT']
@@ -126,7 +128,7 @@ def main():
         lq_orig = lr.copy()
         lr = impad(lr, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
                    right=int(np.ceil(w / pad_factor) * pad_factor - w))
-
+        
         lr_t = t(lr)
         if opt["datasets"]["train"].get("log_low", False):
             lr_t = torch.log(torch.clamp(lr_t + 1e-3, min=1e-3))
@@ -137,13 +139,14 @@ def main():
     
         if df is not None and len(df[(df['heat'] == heat) & (df['name'] == idx_test)]) == 1:
             continue
-        sr_t = model.get_sr(lq=lr_t, heat=None)
+        with torch.cuda.amp.autocast():
+            sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
 
         # We follow a similar way of 'Kind' to finetune the overall brightness as illustrated in Line 73 (https://github.com/zhangyhuaee/KinD/blob/master/evaluate_LOLdataset.py).
         # A normally-exposed image can also be obtained without finetuning the global brightness and we can achvieve compatible performance in terms of SSIM and LPIPS.
         mean_out = sr_t.view(sr_t.shape[0],-1).mean(dim=1)
         mean_gt = cv2.cvtColor(hr.astype(np.float32), cv2.COLOR_BGR2GRAY).mean()/255
-        sr = rgb(torch.clamp(sr_t, 0, 1)*mean_gt/mean_out)
+        sr = rgb(torch.clamp(sr_t, 0, 1)*((mean_gt/mean_out) if args.align else 1))
         sr = sr[:h * scale, :w * scale]
 
         path_out_sr = os.path.join(test_dir, "{:0.2f}".format(heat).replace('.', ''), os.path.basename(hr_path))
