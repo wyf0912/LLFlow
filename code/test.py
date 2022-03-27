@@ -80,7 +80,6 @@ def hiseq_color_cv2_img(img):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--opt", default="confs/LOL_smallNet.yml")
-    parser.add_argument("--align",action="store_true")
     args = parser.parse_args()
     conf_path = args.opt
     conf = conf_path.split('/')[-1].replace('.yml', '')
@@ -146,7 +145,7 @@ def main():
         # A normally-exposed image can also be obtained without finetuning the global brightness and we can achvieve compatible performance in terms of SSIM and LPIPS.
         mean_out = sr_t.view(sr_t.shape[0],-1).mean(dim=1)
         mean_gt = cv2.cvtColor(hr.astype(np.float32), cv2.COLOR_BGR2GRAY).mean()/255
-        sr = rgb(torch.clamp(sr_t, 0, 1)*((mean_gt/mean_out) if args.align else 1))
+        sr = rgb(torch.clamp(sr_t*(mean_gt/mean_out), 0, 1))
         sr = sr[:h * scale, :w * scale]
 
         path_out_sr = os.path.join(test_dir, "{:0.2f}".format(heat).replace('.', ''), os.path.basename(hr_path))
