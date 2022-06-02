@@ -134,7 +134,7 @@ def main():
         if opt.get("concat_histeq", False):
             his = t(his)
             lr_t = torch.cat([lr_t, his], dim=1)
-        heat = opt['heat']
+        heat = 0
     
         if df is not None and len(df[(df['heat'] == heat) & (df['name'] == idx_test)]) == 1:
             continue
