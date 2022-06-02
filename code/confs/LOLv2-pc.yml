@@ -110,7 +110,7 @@ train:
   weight_fl: 1
 
   niter: 40000 #200000
-  val_freq: 20
+  val_freq: 1000
 
 #### validation settings
 val:
