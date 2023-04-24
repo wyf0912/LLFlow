@@ -22,10 +22,10 @@ The evauluation results on LOL are as follows
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93 (0.86)** | **0.11** |
 
-(The ssim of is measured on gray-scale images by default following the instruction of [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/), the results in brackets is evaluted on RGB space. Please feel free to report the corresponding results based on your setting.)
+(The ssim of our methods is measured on gray-scale images by default following the instruction of [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/), the result in brackets is evaluted on RGB space. Please feel free to report the corresponding results based on your setting.)
 
 #### Evalution on VE-LOL
-The baseline results on VE-LOL are from, where all the methods on evaluted on offical (gray-scale) SSIM.
+The baseline results on VE-LOL are from the following work, where all the methods on evaluted on offical (gray-scale) SSIM.
 ```
 Benchmarking Low-Light Image Enhancement and Beyond, IJCV 2021
 ```
