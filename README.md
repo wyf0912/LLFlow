@@ -20,10 +20,20 @@ The evauluation results on LOL are as follows
 | DRBN | 20.13 | 0.83 | 0.16 | 
 | Kind | 20.87 | 0.80 | 0.17 |
 | KinD++ | 21.30 | 0.82 | 0.16 |
-| **LLFlow (Ours)** | **25.19** | **0.93** | **0.11** |
-(The ssim is measured on gray-scale images)
+| **LLFlow (Ours)** | **25.19** | **0.93 (0.86)** | **0.11** |
+
+(The ssim of is measured on gray-scale images by default following the instruction of [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/), the results in brackets is evaluted on RGB space. Please feel free to report the corresponding results based on your setting.)
+
+#### Evalution on VE-LOL
+The baseline results on VE-LOL are from, where all the methods on evaluted on offical (gray-scale) SSIM.
+```
+Benchmarking Low-Light Image Enhancement and Beyond, IJCV 2021
+```
+![image](https://user-images.githubusercontent.com/26561397/233917493-f1ac6b85-3780-4bf0-a417-34555e00125b.png)
+
 #### Computational Cost
 ![Computational Cost](images/cost.png)
+
 The computational cost and performance of models are in the above table. We evaluate the cost using one image with a size 400×600. Ours(large) is the standard model reported in supplementary and Ours(small) is a model with reduced parameters. Both the training config files and pre-trained models are provided.
 
 ### Visual Results
