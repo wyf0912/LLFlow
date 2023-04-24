@@ -22,7 +22,7 @@ The evauluation results on LOL are as follows
 | KinD++ | 21.30 | 0.82 | 0.16 |
 | **LLFlow (Ours)** | **25.19** | **0.93 (0.86)** | **0.11** |
 
-(The ssim of our methods is measured on gray-scale images by default following the instruction of [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/), the result in brackets is evaluted on RGB space. Please feel free to report the corresponding results based on your setting.)
+(Our method measures SSIM value on grayscale images by strictly following SSIM's official code. We also assume that all LoL methods follow this [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/). Since some recent Python implementations of SSIM also provide the option for non-grayscale images, the results obtained using such unofficial implementations have been provided within brackets.)
 
 #### Evalution on VE-LOL
 The baseline results on VE-LOL are from the following work, where all the methods on evaluted on offical (gray-scale) SSIM.
