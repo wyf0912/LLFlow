@@ -24,13 +24,6 @@ The evauluation results on LOL are as follows
 
 (Our method measures SSIM value on grayscale images by strictly following SSIM's official code. We also assume that all LoL methods follow this [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/). Since some recent Python implementations of SSIM also provide the option for non-grayscale images, the results obtained using such unofficial implementations have been provided within brackets.)
 
-#### Evalution on VE-LOL
-The baseline results on VE-LOL are from the following work, where all the methods on evaluted on offical (gray-scale) SSIM.
-```
-Benchmarking Low-Light Image Enhancement and Beyond, IJCV 2021
-```
-![image](https://user-images.githubusercontent.com/26561397/233917493-f1ac6b85-3780-4bf0-a417-34555e00125b.png)
-
 #### Computational Cost
 ![Computational Cost](images/cost.png)
 
