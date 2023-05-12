@@ -54,12 +54,12 @@ pip install -r ./code/requirements.txt
 ### Dataset
 You can refer to the following links to download the datasets
 [LOL](https://daooshee.github.io/BMVC2018website/), and
-[VE-LOL](https://flyywh.github.io/IJCV2021LowLight_VELOL/).
+[LOL-v2](https://github.com/flyywh/CVPR-2020-Semi-Low-Light). 
 ### Pretrained Model
 We provide the pre-trained models with the following settings:
 - A light weight model with promising performance trained on LOL [[Google drive](https://drive.google.com/file/d/1tukKu2KBZ_ohlQiLG4EKnrn1CAt_2F6G/view?usp=sharing)] with training config file `./confs/LOL_smallNet.yml`
 - A standard-sized model trained on LOL [[Google drive](https://drive.google.com/file/d/1t3kASTRXbnEnCZ0EcIvGhMHYkoJ8E2C4/view?usp=sharing)] with training config file `./confs/LOL-pc.yml`.
-- A standard-sized model trained on VE-LOL [[Google drive](https://drive.google.com/file/d/1n7XwIlNr1lUxgZ9qlmFXCwzMTWSStQIW/view?usp=sharing)] with training config file `./confs/LOLv2-pc.yml`.
+- A standard-sized model trained on LOL-v2 [[Google drive](https://drive.google.com/file/d/1n7XwIlNr1lUxgZ9qlmFXCwzMTWSStQIW/view?usp=sharing)] with training config file `./confs/LOLv2-pc.yml`.
 
 ### Test
 You can check the training log to obtain the performance of the model. You can also directly test the performance of the pre-trained model as follows
@@ -89,7 +89,7 @@ You can check the output in `../results`.
 ### Train
 All logging files in the training process, e.g., log message, checkpoints, and snapshots, will be saved to `./experiments`.
 
-1. Modify the paths to dataset in the config yaml files. We provide the following training configs for both `LOL` and `VE-LOL` benchmarks. You can also create your own configs for your own dataset.
+1. Modify the paths to dataset in the config yaml files. We provide the following training configs for both `LOL` and `LOL-v2` benchmarks. You can also create your own configs for your own dataset.
 ```bash
 .\confs\LOL_smallNet.yml
 .\confs\LOL-pc.yml
