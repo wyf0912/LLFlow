@@ -98,7 +98,7 @@ train:
   beta1: 0.9
   beta2: 0.99
   lr_scheme: MultiStepLR
-  warmup_iter: 10  # no warm up
+  warmup_iter: 3000  # no warm up
   lr_steps_rel: [ 0.5, 0.75, 0.9, 0.95 ] # [0.2, 0.35, 0.5, 0.65, 0.8, 0.95]  # [ 0.5, 0.75, 0.9, 0.95 ]
   lr_gamma: 0.5
 
@@ -106,7 +106,7 @@ train:
   # flow_warm_up_iter: -1
   weight_fl: 1
 
-  niter: 30000 #200000
+  niter: 40000 #200000
   val_freq: 200
 
 #### validation settings
