@@ -132,3 +132,7 @@ dmypy.json
 .pyre/
 
 *.DS_Store
+
+*.pth
+
+*_DONE

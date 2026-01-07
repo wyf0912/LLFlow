@@ -139,6 +139,9 @@ def main():
         dataset_cls = LoL_Dataset
     elif opt['dataset'] == 'LoL_v2':
         dataset_cls = LoL_Dataset_v2
+    elif opt['dataset'] == 'Custom':
+        from data.LoL_dataset import Custom_Dataset
+        dataset_cls = Custom_Dataset
     else:
         raise NotImplementedError()
 
