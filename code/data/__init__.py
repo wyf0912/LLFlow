@@ -28,6 +28,8 @@ def create_dataset(dataset_opt):
     mode = dataset_opt['mode']
     if mode == 'LoL':
         from data.LoL_dataset import LoL_Dataset as D
+    elif mode == 'Custom':
+        from data.LoL_dataset import Custom_Dataset as D
     else:
         raise NotImplementedError('Dataset [{:s}] is not recognized.'.format(mode))
     dataset = D(dataset_opt)

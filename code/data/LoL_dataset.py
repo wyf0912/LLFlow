@@ -284,3 +284,85 @@ def center_crop_tensor(img, size):
     assert border_double % 2 == 0, (img.shape, size)
     border = border_double // 2
     return img[:, :, border:-border, border:-border]
+
+
+# cutsom dataset for custom use
+class Custom_Dataset(data.Dataset):
+    def __init__(self, opt, train, all_opt):
+        self.root = opt["root"]
+        self.opt = opt
+        self.concat_histeq = all_opt["concat_histeq"] if "concat_histeq" in all_opt.keys() else False
+        self.histeq_as_input = all_opt["histeq_as_input"] if "histeq_as_input" in all_opt.keys() else False
+        self.log_low = opt["log_low"] if "log_low" in opt.keys() else False
+        self.use_flip = opt["use_flip"] if "use_flip" in opt.keys() else False
+        self.use_rot = opt["use_rot"] if "use_rot" in opt.keys() else False
+        self.use_crop = opt["use_crop"] if "use_crop" in opt.keys() else False
+        self.use_noise = opt['noise_prob'] if "noise_prob" in opt.keys() else False
+        self.noise_prob = opt['noise_prob'] if self.use_noise else None
+        self.noise_level = opt['noise_level'] if "noise_level" in opt.keys() else 0
+        self.center_crop_hr_size = opt.get("center_crop_hr_size", None)
+        self.crop_size = opt.get("GT_size", None)
+        
+        # Direct low/high structure
+        self.pairs = self.load_pairs(self.root)
+        self.to_tensor = ToTensor()
+        self.gamma_aug = opt['gamma_aug'] if 'gamma_aug' in opt.keys() else False
+
+    def load_pairs(self, folder_path):
+        low_list = os.listdir(os.path.join(folder_path, 'low'))
+        low_list = sorted(list(filter(lambda x: 'png' in x or 'jpg' in x, low_list)))
+        pairs = []
+        for f_name in low_list:
+            pairs.append([
+                cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'low', f_name)), cv2.COLOR_BGR2RGB),
+                cv2.cvtColor(cv2.imread(os.path.join(folder_path, 'high', f_name)), cv2.COLOR_BGR2RGB),
+                f_name.split('.')[0]
+            ])
+            pairs[-1].append(self.hiseq_color_cv2_img(pairs[-1][0]))
+        return pairs
+
+    def __len__(self):
+        return len(self.pairs)
+
+    def hiseq_color_cv2_img(self, img):
+        (b, g, r) = cv2.split(img)
+        bH = cv2.equalizeHist(b)
+        gH = cv2.equalizeHist(g)
+        rH = cv2.equalizeHist(r)
+        result = cv2.merge((bH, gH, rH))
+        return result
+
+    def __getitem__(self, item):
+        lr, hr, f_name, his = self.pairs[item]
+        if self.histeq_as_input:
+            lr = his
+
+        if self.use_crop:
+            hr, lr, his = random_crop(hr, lr, his, self.crop_size)
+
+        if self.center_crop_hr_size:
+            hr, lr, his = center_crop(hr, self.center_crop_hr_size), center_crop(lr, self.center_crop_hr_size), center_crop(his, self.center_crop_hr_size)
+
+        if self.use_flip:
+            hr, lr, his = random_flip(hr, lr, his)
+
+        if self.use_rot:
+            hr, lr, his = random_rotation(hr, lr, his)
+
+        if self.gamma_aug:
+            gamma = random.uniform(0.4, 2.8)
+            lr = gamma_aug(lr, gamma=gamma)
+
+        hr = self.to_tensor(hr)
+        lr = self.to_tensor(lr)
+
+        if self.use_noise and random.random() < self.noise_prob:
+            lr = torch.randn(lr.shape) * (self.noise_level / 255) + lr
+        if self.log_low:
+            lr = torch.log(torch.clamp(lr + 1e-3, min=1e-3))
+
+        if self.concat_histeq:
+            his = self.to_tensor(his)
+            lr = torch.cat([lr, his], dim=0)
+
+        return {'LQ': lr, 'GT': hr, 'LQ_path': f_name, 'GT_path': f_name}
