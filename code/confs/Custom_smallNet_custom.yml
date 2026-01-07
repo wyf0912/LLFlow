@@ -29,7 +29,7 @@ le_curve: false
 #### datasets
 datasets:
   train:
-    root: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_processed\train
+    root: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops
     quant: 32
     use_shuffle: true
     n_workers: 0  # per GPU
@@ -44,7 +44,7 @@ datasets:
     gamma_aug: false
 
   val:
-    root: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_processed\val
+    root: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops
     n_workers: 0
     quant: 32
     n_max: 20
@@ -55,9 +55,9 @@ datasets:
 # dataroot_GT: D:\LOLdataset\eval15\high
 # dataroot_LR: D:\LOLdataset\eval15\low
 dataroot_unpaired: /home/data/Dataset/LOL_test/Fusion
-dataroot_GT: D:\codes\projects\low-light-image-enhancement\data\lol_dataset\eval15\high
-dataroot_LR: D:\codes\projects\low-light-image-enhancement\data\lol_dataset\eval15\low
-model_path: D:\codes\projects\rm\LLFlow\code\models\LOL_smallNet.pth
+dataroot_GT: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops\val\high
+dataroot_LR: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops\val\low
+model_path: D:\codes\projects\rm\LLFlow\experiments\train_custom_dataset_rebuttal_smallNet_ch32_blocks1\models\latest_G.pth
 heat: 0 # This is the standard deviation of the latent vectors
 
 #### network structures
@@ -106,8 +106,8 @@ train:
   # flow_warm_up_iter: -1
   weight_fl: 1
 
-  niter: 200 #200000
-  val_freq: 200 # 200
+  niter: 20000 #200000
+  val_freq: 1000 # 200
 
 #### validation settings
 val:
