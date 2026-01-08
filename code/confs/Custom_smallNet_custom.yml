@@ -106,8 +106,8 @@ train:
   # flow_warm_up_iter: -1
   weight_fl: 1
 
-  niter: 20000 #200000
-  val_freq: 1000 # 200
+  niter: 1000 #200000
+  val_freq: 100 # 200
 
 #### validation settings
 val:

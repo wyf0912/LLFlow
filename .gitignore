@@ -136,3 +136,5 @@ dmypy.json
 *.pth
 
 *_DONE
+
+data_custom
