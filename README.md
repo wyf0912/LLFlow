@@ -104,7 +104,24 @@ gpu_ids: [0] # Our model can be trained using a single GPU with memory>20GB. You
 2. Train the network.
 ```bash
 python train.py --opt your_config_path
+
 ```
+
+### Using
+You can directly use our pre-trained model for low-light image enhancement in your own project. Here is an example code snippet to load the pre-trained model and enhance a low-light image.
+
+**For a Single Image**
+
+```python
+python using.py --input path/to/image.jpg --output path/to/output.jpg --model path/to/config.yml
+```
+
+**For a Folder of Images**
+
+```python
+python using.py --input path/to/input_folder --output path/to/output_folder --model path/to/config.yml
+```
+
 ## Citation
 If you find our work useful for your research, please cite our paper
 ```

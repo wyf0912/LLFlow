@@ -54,9 +54,10 @@ datasets:
 #### Test Settings
 # dataroot_GT: D:\LOLdataset\eval15\high
 # dataroot_LR: D:\LOLdataset\eval15\low
-dataroot_unpaired: /home/data/Dataset/LOL_test/Fusion
-dataroot_GT: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops\val\high
-dataroot_LR: D:\codes\projects\rm\low-light-image-enhancement\data\rm_dataset_crops\val\low
+dataroot_unpaired: D:\codes\projects\rm\LLFlow\code\using\using_crops\predick
+
+dataroot_GT: D:\codes\projects\rm\LLFlow\code\using\using_crops\high
+dataroot_LR: D:\codes\projects\rm\LLFlow\code\using\using_crops\low
 model_path: D:\codes\projects\rm\LLFlow\experiments\train_custom_dataset_rebuttal_smallNet_ch32_blocks1\models\latest_G.pth
 heat: 0 # This is the standard deviation of the latent vectors
 
