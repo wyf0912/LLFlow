@@ -6,11 +6,11 @@ from PIL.Image import Exif
 
 # Define paths
 # Replace with your source images directory
-SOURCE_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops"
+SOURCE_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\only_low_not_love_crops"
 # Replace with your ground truth images directory
-GROUND_TRUTH_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\high"
+GROUND_TRUTH_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\only_low_not_love_crops_high"
 # Replace with your desired low-light images directory
-LOW_LIGHT_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\low"
+LOW_LIGHT_DIR = "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\only_low_not_love_crops_low"
 # Create the low-light directory if it doesn't exist
 Path(LOW_LIGHT_DIR).mkdir(parents=True, exist_ok=True)
 Path(GROUND_TRUTH_DIR).mkdir(parents=True, exist_ok=True)

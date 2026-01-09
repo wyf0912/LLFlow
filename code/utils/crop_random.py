@@ -40,4 +40,4 @@ def generate_high_quality_crops(input_folder, output_folder, target_w=600, targe
             print(f"Error: {e}")
 
 if __name__ == "__main__":
-    generate_high_quality_crops("D:\\codes\\projects\\rm\\LLFlow\\code\\using", "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\rm_dataset_crops")
+    generate_high_quality_crops("D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\only_low_not_love", "D:\\codes\\projects\\rm\\LLFlow\\code\\using\\using_crops\\only_low_not_love_crops")

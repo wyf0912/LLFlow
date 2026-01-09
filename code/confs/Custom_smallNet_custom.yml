@@ -54,7 +54,7 @@ datasets:
 #### Test Settings
 # dataroot_GT: D:\LOLdataset\eval15\high
 # dataroot_LR: D:\LOLdataset\eval15\low
-dataroot_unpaired: D:\codes\projects\rm\LLFlow\code\using\using_crops\predick
+dataroot_unpaired: D:\codes\projects\rm\LLFlow\code\using\using_crops\only_low_not_love
 
 dataroot_GT: D:\codes\projects\rm\LLFlow\code\using\using_crops\high
 dataroot_LR: D:\codes\projects\rm\LLFlow\code\using\using_crops\low
