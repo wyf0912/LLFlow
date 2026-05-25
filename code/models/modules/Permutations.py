@@ -1,10 +1,8 @@
-
-
-
 import numpy as np
 import torch
 from torch import nn as nn
 from torch.nn import functional as F
+from torch.nn.parameter import Parameter
 
 from models.modules import thops
 
@@ -14,7 +12,8 @@ class InvertibleConv1x1(nn.Module):
         super().__init__()
         w_shape = [num_channels, num_channels]
         w_init = np.linalg.qr(np.random.randn(*w_shape))[0].astype(np.float32)
-        self.register_parameter("weight", nn.Parameter(torch.Tensor(w_init)))
+        # Ensure weight is a Tensor
+        self.weight = Parameter(torch.Tensor(w_init))
         self.w_shape = w_shape
         self.LU = LU_decomposed
 
@@ -27,19 +26,20 @@ class InvertibleConv1x1(nn.Module):
                 dlogdet = torch.slogdet(self.weight)[1] * pixels
             except Exception as e:
                 print(e)
-                dlogdet = \
-                    torch.slogdet(
-                        self.weight + (self.weight.mean() * torch.randn(*self.w_shape).to(input.device) * 0.001))[
-                        1] * pixels
+                dlogdet = torch.slogdet(
+                    self.weight +
+                    (self.weight.mean() * torch.randn(*
+                     self.w_shape).to(input.device) * 0.001)
+                )[1] * pixels
         if not reverse:
             weight = self.weight.view(w_shape[0], w_shape[1], 1, 1)
         else:
             try:
-                weight = torch.inverse(self.weight.double()).float() \
-                    .view(w_shape[0], w_shape[1], 1, 1)
-            except:
-                weight = torch.inverse(self.weight.double()+ (self.weight.mean() * torch.randn(*self.w_shape).to(input.device) * 0.001).float() \
-                    .view(w_shape[0], w_shape[1], 1, 1))
+                weight = torch.inverse(self.weight.double()).float().view(
+                    w_shape[0], w_shape[1], 1, 1)
+            except RuntimeError:
+                weight = torch.inverse(self.weight.double().cpu()).float().to(
+                    input.device).view(w_shape[0], w_shape[1], 1, 1)
         return weight, dlogdet
 
     def forward(self, input, logdet=None, reverse=False):

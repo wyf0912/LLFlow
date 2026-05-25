@@ -1,113 +1,153 @@
-[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/low-light-image-enhancement-with-normalizing/low-light-image-enhancement-on-lol)](https://paperswithcode.com/sota/low-light-image-enhancement-on-lol?p=low-light-image-enhancement-with-normalizing)
+# LLFlow (Fine-Tuned and Optimized Fork)
 
-# [AAAI 2022 Oral] Low-Light Image Enhancement with Normalizing Flow
-### [Paper](https://arxiv.org/pdf/2109.05923.pdf) | [Project Page](https://wyf0912.github.io/LLFlow/)
+Low-light image enhancement with normalizing flow, adapted from the original LLFlow work and updated for this project’s fine-tuning and runtime optimization workflow.
 
-**Low-Light Image Enhancement with Normalizing Flow**
-<br>_Yufei Wang, Renjie Wan, Wenhan Yang, Haoliang Li, Lap-pui Chau, Alex C. Kot_<br>
-In AAAI'2022
+### [Original Paper](https://arxiv.org/pdf/2109.05923.pdf) | [Original Project](https://wyf0912.github.io/LLFlow/)
 
-## Overall
+The training and inference pipeline has been adapted for:
+* Fine-tuning on custom paired low/high datasets
+* Stability-focused inference behavior
+* Preprocessing options such as log-space low-light input and histogram-equalization concatenation
+* Practical paired and unpaired test scripts with result export
+
+
+### Framework
 ![Framework](images/framework.png)
 
-### Quantitative results
-#### Evaluation on LOL
-The evauluation results on LOL are as follows
-| Method | PSNR | SSIM | LPIPS |
-| :-- | :--: | :--: | :--: |
-| LIME | 16.76 | 0.56 | 0.35 |
-| RetinexNet | 16.77 | 0.56 | 0.47 |
-| DRBN | 20.13 | 0.83 | 0.16 | 
-| Kind | 20.87 | 0.80 | 0.17 |
-| KinD++ | 21.30 | 0.82 | 0.16 |
-| **LLFlow (Ours)** | **25.19** | **0.93 (0.86)** | **0.11** |
-
-(Our method measures SSIM value on grayscale images by strictly following SSIM's official code. We also assume that all LoL methods follow this [offical code](https://ece.uwaterloo.ca/~z70wang/research/ssim/). Since some recent Python implementations of SSIM also provide the option for non-grayscale images, the results obtained using such unofficial implementations have been provided within brackets.)
-
-#### Computational Cost
-![Computational Cost](images/cost.png)
-
-The computational cost and performance of models are in the above table. We evaluate the cost using one image with a size 400×600. Ours(large) is the standard model reported in supplementary and Ours(small) is a model with reduced parameters. Both the training config files and pre-trained models are provided.
-
-### Visual Results
+### Visual Example
 ![Visual comparison with state-of-the-art low-light image enhancement methods on LOL dataset.](images/Input_778-Reference_778.png)
 
-## Get Started
-### Dependencies and Installation
-- Python 3.8
-- Pytorch 1.9
+### Environment Setup
+* Python 3.8
+* CUDA-enabled PyTorch
+* GPU for training and inference
 
-1. Clone Repo
-```
-git clone https://github.com/wyf0912/LLFlow.git
-```
-2. Create Conda Environment
-```
-conda create --name LLFlow python=3.8
-conda activate LLFlow
-```
-3. Install Dependencies
-```
-cd LLFlow
-pip install -r ./code/requirements.txt
-```
-### Dataset
-You can refer to the following links to download the datasets
-[LOL](https://daooshee.github.io/BMVC2018website/), and
-[LOL-v2](https://github.com/flyywh/CVPR-2020-Semi-Low-Light). 
-### Pretrained Model
-We provide the pre-trained models with the following settings:
-- A light weight model with promising performance trained on LOL [[Google drive](https://drive.google.com/file/d/1tukKu2KBZ_ohlQiLG4EKnrn1CAt_2F6G/view?usp=sharing)] with training config file `./confs/LOL_smallNet.yml`
-- A standard-sized model trained on LOL [[Google drive](https://drive.google.com/file/d/1t3kASTRXbnEnCZ0EcIvGhMHYkoJ8E2C4/view?usp=sharing)] with training config file `./confs/LOL-pc.yml`.
-- A standard-sized model trained on LOL-v2 [[Google drive](https://drive.google.com/file/d/1n7XwIlNr1lUxgZ9qlmFXCwzMTWSStQIW/view?usp=sharing)] with training config file `./confs/LOLv2-pc.yml`.
-
-### Test
-You can check the training log to obtain the performance of the model. You can also directly test the performance of the pre-trained model as follows
-
-1. Modify the paths to dataset and pre-trained mode. You need to modify the following path in the config files in `./confs`
-```python
-#### Test Settings
-dataroot_unpaired # needed for testing with unpaired data
-dataroot_GT # needed for testing with paired data
-dataroot_LR # needed for testing with paired data
-model_path
-```
-2. Test the model
-
-To test the model with paired data and obtain the evaluation results, e.g., PSNR, SSIM, and LPIPS. You need to specify the data path ```dataroot_LR```, ```dataroot_GT```, and model path ```model_path``` in the config file. Then run
 ```bash
-python test.py --opt your_config_path
-# You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
+git clone git@github.com:StrikerEurika/LLFlow.git
+cd LLFlow/code
+pip install -r requirements.txt
+```
+```bash
+# Install PyTorch for your CUDA version
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# For Conda
+conda create -n llflow python=3.8 -y
+conda activate llflow
+cd LLFlow/code
+pip install -r requirements.txt
 ```
 
-To test the model with unpaired data, you need to specify the unpaired data path ```dataroot_unpaired```, and model path ```model_path``` in the config file. Then run
-```bash
-python test_unpaired.py --opt your_config_path -n results_folder_name
-# You need to specify an appropriate config file since it stores the config of the model, e.g., the number of layers.
+## Dataset Layout
+### LOL
+Set dataset root to the folder that contains:
+```plain
+<LOL_ROOT>/
+  our485/
+    low/
+    high/
+  eval15/
+    low/
+    high/
 ```
-You can check the output in `../results`.
-### Train
-All logging files in the training process, e.g., log message, checkpoints, and snapshots, will be saved to `./experiments`.
+This is required by `Lol_dataset.py`
+### LOL-v2
+Set dataset root to the folder that contains:
+```plain
+<LOLV2_ROOT>/
+  Synthetic/
+    Train/
+      Low/
+      Normal/
+    Test/
+      low/
+      high/
+  Real_captured/
+    Train/
+      Low/
+      Normal/
+    Test/
+      low/
+      high/
+```
+This is required by `Lol_dataset.py`
 
-1. Modify the paths to dataset in the config yaml files. We provide the following training configs for both `LOL` and `LOL-v2` benchmarks. You can also create your own configs for your own dataset.
+### Custom Paired Dataset
+Set dataset root to:
+```plain
+<CUSTOM_ROOT>/
+  low/
+  high/
+```
+Used by dataset type Custom in `Custom_smallNet_custom.yml`
+
+### Training
 ```bash
-.\confs\LOL_smallNet.yml
-.\confs\LOL-pc.yml
-.\confs\LOLv2-pc.yml
+cd code
+python train.py --opt confs/LOL_smallNet.yml --tfboard
+
+# Other examples
+python train.py --opt confs/LOL-pc.yml --tfboard
+python train.py --opt confs/LOLv2-pc.yml --tfboard
+python train.py --opt confs/Custom_smallNet_custom.yml --tfboard
 ```
-You need to modify the following terms 
-```python
-datasets.train.root
-datasets.val.root
-gpu_ids: [0] # Our model can be trained using a single GPU with memory>20GB. You can also train the model using multiple GPUs by adding more GPU ids in it.
+Outputs are created under:
+```plain
+LLFlow/experiments/<experiment_name>/
 ```
-2. Train the network.
+Including checkpoints, logs, validation images, and TensorBoard logs.
+
+### Paired Evaluation (PSNR / SSIM / LPIPS)
+Run:
 ```bash
-python train.py --opt your_config_path
+python test.py --opt confs/LOL_smallNet.yml
 ```
-## Citation
-If you find our work useful for your research, please cite our paper
+This script:
+* Loads dataroot_LR and dataroot_GT from config
+* Runs enhancement
+* Saves enhanced images under:
+* Saves metrics CSV with timestamp under:
+* Implementation: `test.py`
+
+
+### Unpaired Evaluation / Inference Batch
+Run:
+```bash
+python test_unpaired.py --opt confs/LOL_smallNet.yml -n unpaired_results
 ```
+
+This script:
+* Loads images from dataroot_unpaired
+* Saves outputs to:
+* Implementation: `test_unpaired.py`
+
+## Using In Your Own Project
+Use `using.py` for folder-level enhancement.
+
+Command:
+```bash
+python using.py \
+  --input /path/to/input_folder \
+  --output /path/to/output_folder \
+  --model_path /path/to/latest_G.pth \
+  --conf confs/Custom_smallNet_custom.yml
+```
+
+Arguments:
+* --input: folder containing low-light images
+* --output: folder to save enhanced images
+* --model_path: path to trained weights
+* --conf: model architecture/config yaml
+* Implementation: `using.py`
+
+## License and Attribution
+
+This project is based on LLFlow and includes third-party licensed components.
+See:
+* LICENSE
+* README.md
+If you use this work academically, please cite the original LLFlow paper:
+```plain
 @article{wang2021low,
   title={Low-Light Image Enhancement with Normalizing Flow},
   author={Wang, Yufei and Wan, Renjie and Yang, Wenhan and Li, Haoliang and Chau, Lap-Pui and Kot, Alex C},
@@ -115,6 +155,8 @@ If you find our work useful for your research, please cite our paper
   year={2021}
 }
 ```
-## Contact
-If you have any question, please feel free to contact us via yufei001@ntu.edu.sg.
-(Please use your institution of shool email address to avoid being classfied as junk emails.)
+
+
+
+
+

@@ -38,11 +38,12 @@ def predict(model, lr):
     return visuals.get('rlt', visuals.get('NORMAL'))
 
 
-def t(array): return torch.Tensor(np.expand_dims(array.transpose([2, 0, 1]), axis=0).astype(np.float32)) / 255
+def t(array): return torch.Tensor(np.expand_dims(
+    array.transpose([2, 0, 1]), axis=0).astype(np.float32)) / 255
 
 
 def rgb(t): return (
-        np.clip((t[0] if len(t.shape) == 4 else t).detach().cpu().numpy().transpose([1, 2, 0]), 0, 1) * 255).astype(
+    np.clip((t[0] if len(t.shape) == 4 else t).detach().cpu().numpy().transpose([1, 2, 0]), 0, 1) * 255).astype(
     np.uint8)
 
 
@@ -99,7 +100,7 @@ def main():
     conf = conf_path.split('/')[-1].replace('.yml', '')
     model, opt = load_model(conf_path)
     model.netG = model.netG.cuda()
-    
+
     lr_dir = opt['dataroot_unpaired']
     lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.*'))
 
@@ -117,15 +118,30 @@ def main():
             lr = his
 
         lr_t = t(lr)
+        # Adjust lower bound in torch.clamp to avoid extreme values
         if opt["datasets"]["train"].get("log_low", False):
-            lr_t = torch.log(torch.clamp(lr_t + 1e-3, min=1e-3))
-        if opt.get("concat_histeq", False):
-            his = t(his)
-            lr_t = torch.cat([lr_t, his], dim=1)
-        heat = opt['heat']
-        with torch.cuda.amp.autocast():
-            sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
+            # Changed min from 1e-3 to 1e-2
+            lr_t = torch.log(torch.clamp(lr_t + 1e-3, min=1e-2))
 
+        # Debug: Check input tensor statistics after clamping
+        print(
+            f"DEBUG INPUT AFTER CLAMP - shape: {lr_t.shape}, min: {lr_t.min().item():.6f}, max: {lr_t.max().item():.6f}, mean: {lr_t.mean().item():.6f}, has_nan: {torch.isnan(lr_t).any().item()}")
+
+        # Ensure the input tensor has the correct number of channels
+        if opt.get("concat_histeq", False):
+            his = t(hiseq_color_cv2_img(lr))
+            # Concatenate histogram equalized image
+            lr_t = torch.cat([lr_t, his], dim=1)
+
+        # Debug: Check input tensor shape after concatenation
+        print(f"DEBUG INPUT AFTER CONCAT - shape: {lr_t.shape}")
+
+        # Disable AMP to avoid potential instability
+        sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
+
+        # Debug: Check output tensor statistics after model prediction
+        print(
+            f"DEBUG OUTPUT - shape: {sr_t.shape}, min: {sr_t.min().item():.6f}, max: {sr_t.max().item():.6f}, mean: {sr_t.mean().item():.6f}, has_nan: {torch.isnan(sr_t).any().item()}")
         sr = rgb(torch.clamp(sr_t, 0, 1)[:, :, padding_params[0]:sr_t.shape[2] - padding_params[1],
                  padding_params[2]:sr_t.shape[3] - padding_params[3]])
         assert raw_shape == sr.shape

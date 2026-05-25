@@ -1,6 +1,7 @@
 import glob
 import sys
 from collections import OrderedDict
+from datetime import datetime
 
 from natsort import natsort
 import argparse
@@ -14,6 +15,7 @@ import numpy as np
 import pandas as pd
 import os
 import cv2
+
 
 def fiFindByWildcard(wildcard):
     return natsort.natsorted(glob.glob(wildcard, recursive=True))
@@ -37,11 +39,12 @@ def predict(model, lr):
     return visuals.get('rlt', visuals.get('NORMAL'))
 
 
-def t(array): return torch.Tensor(np.expand_dims(array.transpose([2, 0, 1]), axis=0).astype(np.float32)) / 255
+def t(array): return torch.Tensor(np.expand_dims(
+    array.transpose([2, 0, 1]), axis=0).astype(np.float32)) / 255
 
 
 def rgb(t): return (
-        np.clip((t[0] if len(t.shape) == 4 else t).detach().cpu().numpy().transpose([1, 2, 0]), 0, 1) * 255).astype(
+    np.clip((t[0] if len(t.shape) == 4 else t).detach().cpu().numpy().transpose([1, 2, 0]), 0, 1) * 255).astype(
     np.uint8)
 
 
@@ -69,6 +72,7 @@ def imCropCenter(img, size):
 def impad(img, top=0, bottom=0, left=0, right=0, color=255):
     return np.pad(img, [(top, bottom), (left, right), (0, 0)], 'reflect')
 
+
 def hiseq_color_cv2_img(img):
     (b, g, r) = cv2.split(img)
     bH = cv2.equalizeHist(b)
@@ -76,6 +80,7 @@ def hiseq_color_cv2_img(img):
     rH = cv2.equalizeHist(r)
     result = cv2.merge((bH, gH, rH))
     return result
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -86,19 +91,33 @@ def main():
     model, opt = load_model(conf_path)
     model.netG = model.netG.cuda()
 
+    # Debug: Check if model loaded correctly
+    print(f"Model loaded from: {opt.get('model_path', 'N/A')}")
+    print(
+        f"Model has parameters: {sum(p.numel() for p in model.netG.parameters())/1e6:.2f}M")
+    print(
+        f"concat_histeq: {opt.get('concat_histeq', False)}, log_low: {opt['datasets']['train'].get('log_low', False)}")
+
     lr_dir = opt['dataroot_LR']
     hr_dir = opt['dataroot_GT']
 
-    lr_paths = fiFindByWildcard(os.path.join(lr_dir, '*.png'))
-    hr_paths = fiFindByWildcard(os.path.join(hr_dir, '*.png'))
+    lr_paths = fiFindByWildcard(os.path.join(
+        lr_dir, '*.png')) + fiFindByWildcard(os.path.join(lr_dir, '*.jpg'))
+    hr_paths = fiFindByWildcard(os.path.join(
+        hr_dir, '*.png')) + fiFindByWildcard(os.path.join(hr_dir, '*.jpg'))
 
     this_dir = os.path.dirname(os.path.realpath(__file__))
     test_dir = os.path.join(this_dir, '..', 'results', conf)
     print(f"Out dir: {test_dir}")
 
+    # ensure the output directory exists
+    os.makedirs(test_dir, exist_ok=True)
+
     measure = Measure(use_gpu=False)
 
-    fname = f'measure_full.csv'
+    # Generate timestamp for unique filename
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    fname = f'measure_full_{timestamp}.csv'
     fname_tmp = fname + "_"
     path_out_measures = os.path.join(test_dir, fname_tmp)
     path_out_measures_final = os.path.join(test_dir, fname)
@@ -118,37 +137,54 @@ def main():
 
         lr = imread(lr_path)
         hr = imread(hr_path)
-        his = hiseq_color_cv2_img(lr)
         if opt.get("histeq_as_input", False):
-            lr = his
-        
+            lr = hiseq_color_cv2_img(lr)
+
         # Pad image to be % 2
         h, w, c = lr.shape
         lq_orig = lr.copy()
         lr = impad(lr, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
                    right=int(np.ceil(w / pad_factor) * pad_factor - w))
-        
+
         lr_t = t(lr)
-        if opt["datasets"]["train"].get("log_low", False):
+        log_low_enabled = opt["datasets"]["train"].get("log_low", False)
+        if log_low_enabled:
             lr_t = torch.log(torch.clamp(lr_t + 1e-3, min=1e-3))
         if opt.get("concat_histeq", False):
-            his = t(his)
-            lr_t = torch.cat([lr_t, his], dim=1)
+            # Compute and pad histogram equalized image to match lr dimensions
+            his = hiseq_color_cv2_img(imread(lr_path))
+            his = impad(his, bottom=int(np.ceil(h / pad_factor) * pad_factor - h),
+                        right=int(np.ceil(w / pad_factor) * pad_factor - w))
+            his_t = t(his)
+            lr_t = torch.cat([lr_t, his_t], dim=1)
         heat = 0
-    
+
         if df is not None and len(df[(df['heat'] == heat) & (df['name'] == idx_test)]) == 1:
             continue
-        with torch.cuda.amp.autocast():
-            sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
+
+        # Debug: check input before model
+        print(
+            f"DEBUG INPUT - shape: {lr_t.shape}, min: {lr_t.min().item():.6f}, max: {lr_t.max().item():.6f}, mean: {lr_t.mean().item():.6f}, has_nan: {torch.isnan(lr_t).any().item()}")
+
+        # Disable autocast - mixed precision can cause NaN with this model
+        sr_t = model.get_sr(lq=lr_t.cuda(), heat=None)
+
+        # Debug: print output statistics
+        print(
+            f"DEBUG OUTPUT - min: {sr_t.min().item():.6f}, max: {sr_t.max().item():.6f}, mean: {sr_t.mean().item():.6f}")
+
+        # Model outputs in [0,1] range directly (same as training GT), no need to reverse log transform
 
         # We follow a similar way of 'Kind' to finetune the overall brightness as illustrated in Line 73 (https://github.com/zhangyhuaee/KinD/blob/master/evaluate_LOLdataset.py).
         # A normally-exposed image can also be obtained without finetuning the global brightness and we can achvieve compatible performance in terms of SSIM and LPIPS.
-        mean_out = sr_t.view(sr_t.shape[0],-1).mean(dim=1)
-        mean_gt = cv2.cvtColor(hr.astype(np.float32), cv2.COLOR_BGR2GRAY).mean()/255
+        mean_out = sr_t.view(sr_t.shape[0], -1).mean(dim=1)
+        mean_gt = cv2.cvtColor(hr.astype(np.float32),
+                               cv2.COLOR_BGR2GRAY).mean()/255
         sr = rgb(torch.clamp(sr_t*(mean_gt/mean_out), 0, 1))
         sr = sr[:h * scale, :w * scale]
 
-        path_out_sr = os.path.join(test_dir, "{:0.2f}".format(heat).replace('.', ''), os.path.basename(hr_path))
+        path_out_sr = os.path.join(test_dir, "{:0.2f}".format(
+            heat).replace('.', ''), os.path.basename(hr_path))
 
         imwrite(path_out_sr, sr)
 
@@ -161,10 +197,14 @@ def main():
         str_out = format_measurements(meas)
         print(str_out)
 
-        df = pd.DataFrame([meas]) if df is None else pd.concat([pd.DataFrame([meas]), df])
+        df = pd.DataFrame([meas]) if df is None else pd.concat(
+            [pd.DataFrame([meas]), df])
 
         # df.to_csv(path_out_measures + "_", index=False)
         # os.rename(path_out_measures + "_", path_out_measures)
+
+    if df is None:
+        df = pd.DataFrame()
 
     df.to_csv(path_out_measures, index=False)
     os.rename(path_out_measures, path_out_measures_final)
